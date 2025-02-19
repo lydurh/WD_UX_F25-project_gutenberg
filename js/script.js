@@ -1,34 +1,29 @@
-const BOOK_URL = 'http://gutendex.com/books';
+const BOOK_URL = 'https://gutendex.com/books/';
 
+const showBooks = async () => {
+  const fragment = document.createDocumentFragment();
 
-const DEFAULT_BOOKS = 10;
+  await fetch(BOOK_URL)
+    .then(response => response.json())
+    .then(data => {
+      data.results.forEach(book => {
+        const card = document.querySelector('#book-card').content.cloneNode(true);
 
-const showRandomBook = async (numBooks = DEFAULT_BOOKS) => {
-  const fragment = document.createDocumentFragment(); {
-    await fetch(`${BOOK_URL}`)
-      .then(response => response.json())
-      .then(data => {
-        data.array.forEach(data => {
+        card.querySelector('h2').innerText = book.title;
+        card.querySelector('h3').innerText = book.authors.map(author => author.name).join(', ');
 
-          const card = document.querySelector('#book-card').content.cloneNode(true);
+        const img = card.querySelector('img');
+        img.setAttribute('src', book.formats["image/jpeg"] || 'default.jpg');
+        img.setAttribute('alt', book.title);
 
-          card.querySelector('h2').innerText = data.title;
-          card.querySelector('h3').innerText = data.author;
+        card.querySelector('p').innerText = book.summaries
 
-          const img = card.querySelector('img');
-          // img.setAttribure('src', `${}`);
-          // img.setAttribure('alt',)
+        fragment.append(card);
+      });
+    })
+    .catch(error => console.error(error));
 
-          card.querySelector('p').innerText = data.summaries;
-          fragment.append(card);
-        });
-      })
-      .catch(error => console.log(error));
-  }
   document.querySelector('#book-list').append(fragment);
 };
 
-showRandomBook();
-
-
-
+showBooks();
